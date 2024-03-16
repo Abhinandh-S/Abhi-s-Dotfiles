@@ -1,40 +1,42 @@
+##########################################
+################ IMPORT ##################
+##########################################
 
 from libqtile import bar, layout, qtile, widget
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
-
-mod = "mod4"
-terminal = guess_terminal()
-
-# wallpaper settings
-
 from libqtile import hook
 import subprocess
-
-@hook.subscribe.startup_once
-def autostart():
-    subprocess.Popen(["nitrogen","--restore"])
-
-@hook.subscribe.startup_once
-def autostart():
-    subprocess.Popen(["sh -c ~/.local/bin/notify_log.sh"])
-
-
-@hook.subscribe.startup_once
-def autostart():
-    subprocess.Popen(["dunst"])
-
+from libqtile import hook
+import subprocess
 import os
-import subprocess
+from qtile_extras.widget.decorations import BorderDecoration
+from qtile_extras import widget
+from qtile_extras.widget.decorations import PowerLineDecoration, RectDecoration
 
-from libqtile import hook
+
+##########################################
+############## AUTO START ################
+##########################################
 
 @hook.subscribe.startup_once
 def autostart():
+    #  subprocess.Popen(["nitrogen","--restore"])
+    subprocess.Popen(['~/Downloads/notifyDT.sh',"$HOME/abhis-expiriment/notify.log"])
+    subprocess.Popen(["dunst"])
+    subprocess.Popen(["pulseaudio --start"])
+    subprocess.Popen(["emacs --daemon"])
+
     home = os.path.expanduser('~/.config/qtile/autostart.sh')
     subprocess.Popen([home])
 
+##########################################
+############# KEY BINDINGS ###############
+##########################################
+
+mod = "mod4"
+terminal = guess_terminal()
 
 keys = [
     Key([mod], "h", lazy.layout.left(), desc="Move focus to left"),
@@ -51,32 +53,27 @@ keys = [
     Key([mod, "control"], "j", lazy.layout.grow_down(), desc="Grow window down"),
     Key([mod, "control"], "k", lazy.layout.grow_up(), desc="Grow window up"),
     Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
-    # Key([mod,"shift"],"Escape", lazy.spawn("rofi -show launcher -modi launcher:~/.config/rofi/launchers/type-6/launcher.sh: ")),
-
-
-    Key([mod],"d", lazy.spawn("sh -c ~/.config/rofi/launchers/type-6/launcher.sh")),
-    Key([mod, "control"],"y", lazy.spawn("sh -c ~/.config/rofi/powermenu/type-3/powermenu.sh")),
-
-    Key(
-        [mod, "shift"],
-        "Return",
-        lazy.layout.toggle_split(),
-        desc="Toggle between split and unsplit sides of stack",
-    ),
+    Key([mod, "shift"], "Return", lazy.layout.toggle_split(), desc="Toggle between split and unsplit sides of stack",),
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
-    # Toggle between different layouts as defined below
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
-    Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
-    Key(
-        [mod],
-        "f",
-        lazy.window.toggle_fullscreen(),
-        desc="Toggle fullscreen on the focused window",
-    ),
+    Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
+    Key([mod], "f", lazy.window.toggle_fullscreen(), desc="Toggle fullscreen on the focused window",),
     Key([mod], "t", lazy.window.toggle_floating(), desc="Toggle floating on the focused window"),
     Key([mod, "control"], "r", lazy.reload_config(), desc="Reload the config"),
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
     Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a prompt widget"),
+
+    ####################################################
+    ################# MY KEYBINDINGS ###################
+    ####################################################   
+    Key([mod],"a", lazy.window.keep_above()),
+    Key([mod],"b", lazy.window.keep_below()),
+    Key([mod],"m", lazy.spawn("telegram-desktop")),
+    Key([mod],"e", lazy.spawn("emacs")),
+    Key([mod],"f", lazy.spawn("firefox")),
+    Key([mod],"v", lazy.spawn("vivaldi-snapshot")),
+    Key([mod],"d", lazy.spawn("sh -c ~/.config/rofi/launchers/type-6/launcher.sh")),
+    Key([mod, "control"],"y", lazy.spawn("sh -c ~/.config/rofi/powermenu/type-3/powermenu.sh")),
 ]
 
 # Add key bindings to switch VTs in Wayland.
@@ -120,20 +117,55 @@ for i in groups:
     )
 
 layouts = [
+        layout.MonadTall(
+         border_width=2,
+         border_focus='#666666',
+         ),
+
     layout.Columns(
-        border_focus='#cba6f7',
-        border_on_single=True,
-        border_focus_stack=["#cba6f7", "#cba6f7"], border_width=3),
-    # Try more layouts by unleashing below layouts.
-     layout.Stack(num_stacks=2),
+        border_width=2,
+        border_focus='#666666',
+        ),
+    #layout.Max(),
+    #Try more layouts by unleashing below layouts.
+    #layout.Stack(num_stacks=2),
+    #layout.Bsp(),
+     #layout.Matrix(),
+          #layout.MonadWide(),
+     layout.RatioTile(),
+     #layout.Tile(),
+     #layout.TreeTab(),
+     #layout.VerticalTile(),
+     # layout.Zoomy(),
 ]
 
 widget_defaults = dict(
-    font="sans",
+    font="JetBrainsMono-Medium",
     fontsize=12,
     padding=3,
 )
 extension_defaults = widget_defaults.copy()
+##############################################
+############# Qtile Extras ##################
+##############################################
+
+w = "#ffffff"
+bg = "background"
+
+powerline = {
+    "decorations": [
+        PowerLineDecoration(
+            path='forward_slash',
+            )
+    ]
+}
+
+decoration_group = {
+    "decorations": [
+        RectDecoration(colour="#707070", radius=10, filled=True, padding_y=4, group= False,)
+    ],
+    "padding":10,
+}
 
 screens = [
     Screen(
@@ -141,48 +173,129 @@ screens = [
             [
                 widget.CurrentLayout(),
                 widget.GroupBox(
+                    margin_y = 3,
+                    margin_x = 0,
+                    padding_y =5,
+                    padding_x = 3,
+                    borderwidth = 3,
+                    this_current_screen_border = w,
                     highlight_method='line',
-                    active='#a6e3a1',
+                    active=w,
                     ),
-                widget.Prompt(),
+                widget.TextBox(
+        text=" ",
+                    background='#000000',
+                    **powerline,
+                    ),
+
+                widget.Systray(
+                        **powerline,
+                        background='#292929',
+                        icon_size=13,
+                         ),
+
+                widget.Prompt(
+                    ),
                 widget.WindowName(
-                    foreground='#a6e3a1'
+                    max_chars=80,
                     ),
                 widget.Chord(
-                    chords_colors={
-                        "launch": ("#ff0000", "#ffffff"),
-                    },
-                    name_transform=lambda name: name.upper(),
-                ),
-                # NB Systray is incompatible with Wayland, consider using StatusNotifier instead
-                # widget.StatusNotifier(),
-                widget.Clipboard(
-                    foreground='#eba0ac',
-                    timeout=10,
+                    chords_colors={"launch": ("#ff0000", "#ffffff"), }, 
+                    name_transform=lambda name: name.upper(), ),
+                                widget.Spacer(
+                    length=800,
                     ),
-                widget.OpenWeather(
-                    location='Ponkunnam',
-                    foreground='#f5c2e7',
-                    ),
-                widget.Memory(
-                    foreground='#74c7ec'
-                    ),
+                                widget.Spacer(length = 12),
+
+                widget.TextBox(
+                    text="󰤨 ",
+                    foreground=w,
+                    fontsize=15,
+                                      ),
                 widget.Net(
-                    interface="wlan0",
-                    foreground='#fff6b3',
-                    ),
-                widget.Clock(format="%A,  %B %d - %I:%M %p",
-                             foreground='#cba6f7'),
-                widget.QuickExit(),
-            ],
-            24,
-            # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
-            # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
+                    format='{down:.0f}{down_suffix} ↓↑ {up:.0f}{up_suffix}',
+                    foreground=w,
+                                    ),
+
+                widget.NetGraph(
+                        type='line',
+                        line_width=1,
+                        bandwidth_type='down',
+                        border_color = '#000000',
+                        graph_color=w,
+                       
+                        ),
+ widget.Spacer(length = 6),
+
+widget.Sep(
+        linewidth=1,
         ),
-        # You can uncomment this variable if you see that on X11 floating resize/moving is laggy
-        # By default we handle these events delayed to already improve performance, however your system might still be struggling
-        # This variable is set to None (no cap) by default, but you can set it to 60 to indicate that you limit it to 60 events per second
-        # x11_drag_polling_rate = 60,
+
+    widget.Memory(),
+    widget.Spacer(length = 6),
+
+    widget.Sep(
+            linewidth=1,
+            ),
+
+widget.Spacer(length = 6),
+
+widget.Clock(format="%Y-%m-%d %a %I:%M %p",),
+widget.Spacer(length = 6),
+
+widget.Sep(
+        linewidth=1,
+        ),
+widget.Spacer(length = 6),
+
+widget.TextBox(
+        text="Volume:",
+                    foreground=w,
+                    fontsize=13,
+                                        ),
+
+widget.PulseVolume(
+        emoji_list=['󰝟', '󰕿', '󰖀', '󰕾'],
+        ),
+widget.Spacer(length = 6),
+widget.Sep(
+        linewidth=1,
+        ),
+widget.Spacer(length = 12),
+
+widget.WidgetBox(
+        close_button_location='right',
+        text_open='',
+        text_closed='',
+        fontsize=18,
+        widgets=[
+            widget.WidgetBox(
+        close_button_location='right',
+        text_open='' ,
+        text_closed='' ,
+        fontsize=15,
+        widgets=[
+widget.Wallpaper(
+        directory='~/Pictures/wallpaper/',
+        random_selection=True,
+        wallpaper_command=['feh', '--bg-fill'],
+               ),
+    ]
+),
+
+
+    ]
+),
+widget.Spacer(length = 12),
+
+
+
+
+    widget.QuickExit(default_text='', countdown_format='[{}]',background='#000000',),
+widget.Spacer(length = 12),
+            ],
+            28,
+        ),
     ),
 ]
 
@@ -214,20 +327,7 @@ floating_layout = layout.Floating(
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 reconfigure_screens = True
-
-# If things like steam games want to auto-minimize themselves when losing
 # focus, should we respect this or not?
 auto_minimize = True
-
-# When using the Wayland backend, this can be used to configure input devices.
 wl_input_rules = None
-
-# XXX: Gasp! We're lying here. In fact, nobody really uses or cares about this
-# string besides java UI toolkits; you can see several discussions on the
-# mailing lists, GitHub issues, and other WM documentation that suggest setting
-# this string if your java app doesn't work correctly. We may as well just lie
-# and say that we're a working one by default.
-#
-# We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
-# java that happens to be on java's whitelist.
-wmname = "LG3D"
+wmname = "Qtile"
