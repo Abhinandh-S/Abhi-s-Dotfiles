@@ -1,0 +1,349 @@
+# set modifier
+set $super  Mod4
+set $alt    Mod1
+
+################################
+### Commonly Used Variables: ###
+################################
+# - Below defined are some of the very common variables that users like to customise
+# - For Keybindings search: Commonly Used Keybindings in this document
+# - Make sure that you give the absolute path to the binary / program / executable
+# - You may specify any additional arguments required by the binary / executable
+
+### Wallpaper: ###
+# - You need to specify homescreen wallpaper using azote
+
+set $lockScreenWallpaper $HOME/Documents/wallpapers/roaFKt.png
+
+### Applications: ###
+
+set $preferredTerminalEmulator /usr/bin/alacritty
+set $preferredBrowser /usr/bin/brave
+set $preferredScreenCaptureTool /usr/bin/flameshot gui
+
+###########################################
+### Commonly Used Application Keybinds: ###
+###########################################
+
+bindsym $super+b exec $preferredBrowser;focus
+bindsym $alt+b exec $preferredBrowser --incognito;focus
+
+### Backlit CTRL
+bindsym F1 exec "brightnessctl s 10%-"
+bindsym F2 exec "brightnessctl s +10%"
+bindsym $super+F1 exec "brightnessctl s 1%"
+bindsym $super+Escape exec $HOME/.config/mybin/dm_msi_opt
+
+### Chats
+bindsym $alt+e exec /usr/bin/element-desktop;focus
+bindsym $alt+s exec /usr/bin/slack;focus
+
+### Controls and Monitoring
+bindsym $super+p exec "alacritty --title 'ctl-pulse' -e pulsemixer"
+bindsym $super+t exec "alacritty --title 'ctl-htop' -e htop"
+bindsym $super+e exec "alacritty --title 'ctl-ranger' -e ranger"
+bindsym $super+F7 exec "alacritty --title 'ctl-keybs' -e ~/.config/mybin/keybs"
+
+# Any window with name starting with ctl will be floating and sticky
+for_window [title="^ctl"] floating enable sticky enable
+for_window [title="(htop|ranger|keybs)$"] resize set 1000 800
+for_window [title="^ctl"] move absolute position center
+
+### Screen Capturing & Print Screen: ###
+
+bindsym Print exec --no-startup-id $preferredScreenCaptureTool
+
+### Start a Terminal Emulator: ###
+# - You can change the preferredTerminalEmulator variable
+# - alacritty & xfce4-terminal can also be started using their individual keybindings
+
+bindsym $super+Return exec $preferredTerminalEmulator
+
+# set font
+font pango: source code pro 10
+
+# Use Mouse+$super to drag floating windows to their wanted position
+floating_modifier $super
+
+#autostart
+exec --no-startup-id ~/.fehbg
+exec --no-startup-id xsettingsd &
+exec --no-startup-id pasystray
+# exec --no-startup-id conky # not needed for now; might delete this soon;
+exec --no-startup-id conky -c ~/.config/conky/conky-shcts
+exec --no-startup-id dunst
+exec --no-startup-id desktop-items
+exec --no-startup-id nm-applet
+exec --no-startup-id pamac-tray
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id xfce4-power-manager
+exec_always --no-startup-id ff-theme-util
+exec_always --no-startup-id setcursor
+exec_always --no-startup-id numlockx on
+exec --no-startup-id picom --experimental-backends &
+exec blueberry-tray
+exec --no-startup-id java -Xmx1024m -jar "/opt/xdman/xdman.jar" -m
+
+# hide/unhide i3status bar
+bindsym $super+m bar mode toggle
+
+# start dmenu (a program launcher)
+bindsym $super+Shift+d exec i3-dmenu-desktop --dmenu="dmenu_run -nf '#fbf1c7' -sf '#282828' -sb '#98971a' -fn 'DejaVu Sans Mono:size=10'"
+bindsym $super+d exec "~/.config/rofi/launchers/type-6/launcher.sh" 
+#bindsym $super+d exec rofi -theme gruvbox-dark-hard -lines 12 -padding 18 -width 60 -location 0 -show drun -sidebar-mode -columns 3 -font 'Noto Sans 12'
+
+# Lock screen
+bindsym $alt+l exec i3lock -t -i $lockScreenWallpaper
+
+# Screen brightness controls
+# brightnessctl should be installed
+bindsym XF86MonBrightnessUp exec "brightnessctl s +10%"
+bindsym XF86MonBrightnessDown exec "brightnessctl s 10%-"
+
+# Use pactl to adjust volume in PulseAudio.
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+#change volume
+#bindsym XF86AudioRaiseVolume exec pulseaudio-ctl up
+#bindsym XF86AudioLowerVolume exec pulseaudio-ctl down
+#bindsym XF86AudioMute exec pulseaudio-ctl mute
+
+
+# music control
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl prev
+bindsym XF86AudioPlay exec playerctl toggle
+bindsym XF86AudioStop exec playerctl stop
+
+# Print screen
+
+bindsym $super+Print --release exec --no-startup-id i3-scrot -w
+bindsym $super+Shift+Print --release exec --no-startup-id i3-scrot -s
+
+# kill focused window
+bindsym $super+q kill
+
+# change focus
+bindsym $super+h focus left
+bindsym $super+j focus down
+bindsym $super+k focus up
+bindsym $super+l focus right
+
+# move focused window
+bindsym $super+Shift+h move left
+bindsym $super+Shift+j move down
+bindsym $super+Shift+k move up
+bindsym $super+Shift+l move right
+
+# split in horizontal orientation
+bindsym $alt+h split h
+
+# split in vertical orientation
+bindsym $alt+v split v
+
+# enter fullscreen mode for the focused container
+bindsym $super+f fullscreen toggle
+
+# change container layout split
+bindsym $super+s layout toggle split
+
+# toggle tiling / floating
+bindsym $super+space floating toggle
+
+# change focus between tiling / floating windows
+bindsym $super+Shift+space focus mode_toggle
+
+# toggle sticky
+bindsym $super+Shift+s sticky toggle
+
+# focus the parent container
+bindsym $super+a focus parent
+
+#navigate workspaces next / previous
+bindsym $super+Ctrl+k workspace next
+bindsym $super+Ctrl+j workspace prev
+
+# switch to workspace
+bindsym $super+1 workspace 1
+bindsym $super+2 workspace 2
+bindsym $super+3 workspace 3
+bindsym $super+4 workspace 4
+bindsym $super+5 workspace 5
+bindsym $super+6 workspace 6
+bindsym $super+7 workspace 7
+bindsym $super+8 workspace 8
+bindsym $super+9 workspace 9
+
+# move focused container to workspace
+bindsym $super+Shift+1 move container to workspace 1
+bindsym $super+Shift+2 move container to workspace 2
+bindsym $super+Shift+3 move container to workspace 3
+bindsym $super+Shift+4 move container to workspace 4
+bindsym $super+Shift+5 move container to workspace 5
+bindsym $super+Shift+6 move container to workspace 6
+bindsym $super+Shift+7 move container to workspace 7
+bindsym $super+Shift+8 move container to workspace 8
+bindsym $super+Shift+9 move container to workspace 9
+
+# Move to workspace with focused container
+bindsym $alt+Shift+1 move container to workspace 1; workspace 1
+bindsym $alt+Shift+2 move container to workspace 2; workspace 2
+bindsym $alt+Shift+3 move container to workspace 3; workspace 3
+bindsym $alt+Shift+4 move container to workspace 4; workspace 4
+bindsym $alt+Shift+5 move container to workspace 5; workspace 5
+bindsym $alt+Shift+6 move container to workspace 6; workspace 6
+bindsym $alt+Shift+7 move container to workspace 7; workspace 7
+bindsym $alt+Shift+8 move container to workspace 8; workspace 8
+bindsym $alt+Shift+9 move container to workspace 9; workspace 9
+
+# reload the configuration file
+bindsym $super+Shift+c reload
+
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $super+Shift+r restart
+
+# resize window (you can also use the mouse for that)
+mode "resize" {
+  bindsym h resize shrink width 5 px or 5 ppt
+  bindsym j resize grow height 5 px or 5 ppt
+  bindsym k resize shrink height 5 px or 5 ppt
+  bindsym l resize grow width 5 px or 5 ppt
+  bindsym Return mode "default"
+}
+bindsym $super+r mode "resize"
+
+# change borders
+bindsym $super+u border none
+bindsym $super+y border pixel 4
+bindsym $super+n border normal
+
+#########
+# THEME #
+#########
+
+set $bg #282828
+set $red #cc241d
+set $green #abc0be
+set $yellow #d79921
+set $blue #458588
+set $purple #b16286
+set $aqua #689d68
+set $gray #a89984
+set $darkgray #1d2021
+set $white #fbf1c7
+
+# panel
+# Start i3bar to display a workspace bar
+
+bar {
+  position top
+  tray_output primary
+  status_command exec i3status
+  font pango:DejaVu Sans Mono, Font Awesome 5 Free 10
+  separator_symbol "  "
+
+	colors {
+    # bar background color
+   # background $#000000
+     background $bg
+    # text color used for blocks that do not have a color specified.
+    statusline $white
+    # workspaces section  border  background  text
+    focused_workspace     $green  $green      $bg
+    inactive_workspace    $bg     $bg         $green
+    active_workspace      $green  $bg         $green
+    urgent_workspace      $red    $bg         $red
+  }
+}
+
+# window rules, you can find the window class using xprop
+for_window [title="Azote"] floating enable sticky enable border normal
+for_window [class=".*"] border pixel 4
+
+# colour of              border  background  text    indicator  child_border
+client.focused           $green  $green      $bg     $aqua      $green
+client.focused_inactive  $bg     $bg         $white  $aqua      $bg
+client.unfocused         $bg     $bg         $white  $aqua      $bg
+client.urgent            $red    $red        $white  $purple    $bg
+client.placeholder       $bg     $bg         $white  $aqua      $bg
+client.background        $bg
+
+#############################
+### settings for i3-gaps: ###
+#############################
+
+# Set inner/outer gaps
+gaps inner 8
+gaps outer 4
+
+# Additionally, you can issue commands with the following syntax. This is useful to bind keys to changing the gap size.
+# gaps inner|outer current|all set|plus|minus <px>
+# gaps inner all set 10
+# gaps outer all plus 5
+
+# Smart gaps
+# on             Enable gaps on a workspace when there is at least one container
+# inverse_outer  Enable outer gaps when there is exactly one container
+smart_gaps inverse_outer
+
+# Smart borders (draw borders around container only if it is not the only container on this workspace)
+# on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
+smart_borders on
+
+# Press $mod+Shift+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.
+set $mode_gaps Gaps: (o) outer, (i) inner
+set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
+set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
+bindsym $super+Shift+g mode "$mode_gaps"
+
+mode "$mode_gaps" {
+  bindsym o      mode "$mode_gaps_outer"
+  bindsym i      mode "$mode_gaps_inner"
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+}
+mode "$mode_gaps_inner" {
+  bindsym plus  gaps inner current plus 5
+  bindsym minus gaps inner current minus 5
+  bindsym 0     gaps inner current set 0
+
+  bindsy Shift+plus  gaps inner all plus 5
+  bindsym Shift+minus gaps inner all minus 5
+  bindsym Shift+0     gaps inner all set 0
+
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+}
+mode "$mode_gaps_outer" {
+  bindsym plus  gaps outer current plus 5
+  bindsym minus gaps outer current minus 5
+  bindsym 0     gaps outer current set 0
+
+  bindsym Shift+plus  gaps outer all plus 5
+  bindsym Shift+minus gaps outer all minus 5
+  bindsym Shift+0     gaps outer all set 0
+
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+}
+
+# Set shut down, restart and locking features
+bindsym $super+0 mode "$mode_system"
+set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
+mode "$mode_system" {
+  # FAILS to display background
+  bindsym l exec --no-startup-id i3lock -t -i $lockScreenWallpaper, mode "default"
+  bindsym s exec --no-startup-id i3exit suspend, mode "default"
+  bindsym u exec --no-startup-id i3exit switch_user, mode "default"
+  bindsym e exec --no-startup-id i3exit logout, mode "default"
+  bindsym h exec --no-startup-id i3exit hibernate, mode "default"
+  bindsym r exec --no-startup-id i3exit reboot, mode "default"
+  bindsym Shift+s exec --no-startup-id i3exit shutdown, mode "default"
+
+  # exit system mode: "Enter" or "Escape"
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+}
